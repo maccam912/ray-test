@@ -9,15 +9,7 @@ spec:
 
   # Runtime environment: UV will install dependencies from pyproject.toml
   runtimeEnvYAML: |
-    working_dir: "."
-    excludes:
-      - ".git/**"
-      - ".git"
-      - "__pycache__/**"
-      - "*.pyc"
-      - "*.pyo"
-      - ".claude/**"
-      - "kubernetes/**"
+    working_dir: "https://github.com/maccam912/ray-test/archive/refs/heads/main.zip"
     env_vars:
       PYTHONUNBUFFERED: "1"
 
@@ -30,7 +22,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: ray-job-submitter
-          image: rayproject/ray:2.30.0-py310
+          image: rayproject/ray:2.51.1-py310
           resources:
             limits:
               memory: "4Gi"
@@ -48,7 +40,7 @@ spec:
 
   # Ray cluster configuration
   rayClusterSpec:
-    rayVersion: '2.30.0'
+    rayVersion: '2.51.1'
 
     # Enable in-tree autoscaling (optional)
     enableInTreeAutoscaling: true
@@ -64,7 +56,10 @@ spec:
         spec:
           containers:
             - name: ray-head
-              image: rayproject/ray:2.30.0-py310
+              image: rayproject/ray:2.51.1-py310
+              env:
+                - name: RAY_RUNTIME_ENV_HOOK
+                  value: ray._private.runtime_env.uv_runtime_env_hook.hook
               ports:
                 - containerPort: 6379
                   name: gcs
@@ -104,7 +99,10 @@ spec:
           spec:
             containers:
               - name: ray-worker
-                image: rayproject/ray:2.30.0-py310
+                image: rayproject/ray:2.51.1-py310
+                env:
+                  - name: RAY_RUNTIME_ENV_HOOK
+                    value: ray._private.runtime_env.uv_runtime_env_hook.hook
                 resources:
                   limits:
                     memory: "8Gi"
@@ -135,7 +133,10 @@ spec:
           spec:
             containers:
               - name: ray-worker
-                image: rayproject/ray:2.30.0-py310
+                image: rayproject/ray:2.51.1-py310
+                env:
+                  - name: RAY_RUNTIME_ENV_HOOK
+                    value: ray._private.runtime_env.uv_runtime_env_hook.hook
                 resources:
                   limits:
                     memory: "12Gi"

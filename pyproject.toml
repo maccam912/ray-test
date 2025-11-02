@@ -16,6 +16,7 @@ dependencies = [
     "imageio>=2.31.0",
     "imageio-ffmpeg>=0.4.9",
     "tensorboard>=2.14.0",
+    "pydantic",
 ]
 
 [project.optional-dependencies]
