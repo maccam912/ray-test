@@ -1,0 +1,26 @@
+[project]
+name = "ray-test"
+version = "0.1.0"
+description = "Multi-agent reinforcement learning for hide and seek using Ray RLlib and PettingZoo"
+readme = "README.md"
+requires-python = ">=3.9,<3.13"
+dependencies = [
+    "ray[rllib]>=2.30.0",
+    "pettingzoo[classic]>=1.24.0",
+    "supersuit>=3.9.0",
+    "gymnasium>=0.29.0",
+    "torch>=2.0.0",
+    "numpy>=1.24.0,<2.0.0",
+    "pygame>=2.1.0",
+    "moviepy>=1.0.3",
+    "imageio>=2.31.0",
+    "imageio-ffmpeg>=0.4.9",
+    "tensorboard>=2.14.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+]

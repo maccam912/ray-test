@@ -1,0 +1,41 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+venv/
+env/
+
+# Ray outputs
+outputs/
+ray_results/
+/tmp/ray/
+
+# Videos and recordings
+*.mp4
+*.avi
+*.gif
+
+# Checkpoints
+*.ckpt
+*.pt
+*.pth
+
+# Logs
+*.log
+logs/
+tensorboard_logs/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

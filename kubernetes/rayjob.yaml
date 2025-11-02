@@ -1,0 +1,169 @@
+apiVersion: ray.io/v1
+kind: RayJob
+metadata:
+  name: hide-and-seek-training
+  namespace: default
+spec:
+  # The command to run for training (CPU-only) using UV
+  entrypoint: uv run scripts/train.py --num-hiders=3 --num-seekers=2 --num-workers=8 --num-gpus=0 --total-timesteps=5000000 --record-video
+
+  # Runtime environment: UV will install dependencies from pyproject.toml
+  runtimeEnvYAML: |
+    working_dir: "."
+    excludes:
+      - ".git/**"
+      - ".git"
+      - "__pycache__/**"
+      - "*.pyc"
+      - "*.pyo"
+      - ".claude/**"
+      - "kubernetes/**"
+    env_vars:
+      PYTHONUNBUFFERED: "1"
+
+  # Submission mode: creates a K8s Job
+  submissionMode: K8sJobMode
+
+  # Job submitter pod configuration
+  submitterPodTemplate:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: ray-job-submitter
+          image: rayproject/ray:2.30.0-py310
+          resources:
+            limits:
+              memory: "4Gi"
+            requests:
+              memory: "2Gi"
+
+  # Automatically clean up after completion
+  shutdownAfterJobFinishes: true
+  ttlSecondsAfterFinished: 3600  # Keep for 1 hour after completion
+
+  # Retry configuration
+  suspend: false
+  # Number of retries before marking job as failed
+  # Note: This is at the RayJob level, not Ray cluster level
+
+  # Ray cluster configuration
+  rayClusterSpec:
+    rayVersion: '2.30.0'
+
+    # Enable in-tree autoscaling (optional)
+    enableInTreeAutoscaling: true
+
+    # Head node configuration
+    headGroupSpec:
+      rayStartParams:
+        dashboard-host: '0.0.0.0'
+        block: 'true'
+        num-cpus: '0'  # Don't schedule tasks on head node
+
+      template:
+        spec:
+          containers:
+            - name: ray-head
+              image: rayproject/ray:2.30.0-py310
+              ports:
+                - containerPort: 6379
+                  name: gcs
+                - containerPort: 8265
+                  name: dashboard
+                - containerPort: 10001
+                  name: client
+              resources:
+                limits:
+                  memory: "8Gi"
+                requests:
+                  memory: "4Gi"
+              volumeMounts:
+                - name: ray-logs
+                  mountPath: /tmp/ray
+                - name: shared-storage
+                  mountPath: /app/outputs
+          volumes:
+            - name: ray-logs
+              emptyDir: {}
+            - name: shared-storage
+              persistentVolumeClaim:
+                claimName: ray-outputs-pvc
+
+    # Worker node configurations (CPU-only)
+    workerGroupSpecs:
+      # CPU workers for rollouts
+      - groupName: cpu-rollout-workers
+        replicas: 6
+        minReplicas: 4
+        maxReplicas: 12
+        rayStartParams:
+          num-cpus: "4"
+          block: 'true'
+
+        template:
+          spec:
+            containers:
+              - name: ray-worker
+                image: rayproject/ray:2.30.0-py310
+                resources:
+                  limits:
+                    memory: "8Gi"
+                  requests:
+                    memory: "4Gi"
+                volumeMounts:
+                  - name: ray-logs
+                    mountPath: /tmp/ray
+                  - name: shared-storage
+                    mountPath: /app/outputs
+            volumes:
+              - name: ray-logs
+                emptyDir: {}
+              - name: shared-storage
+                persistentVolumeClaim:
+                  claimName: ray-outputs-pvc
+
+      # CPU workers for training (higher CPU/memory)
+      - groupName: cpu-training-workers
+        replicas: 2
+        minReplicas: 1
+        maxReplicas: 4
+        rayStartParams:
+          num-cpus: "8"
+          block: 'true'
+
+        template:
+          spec:
+            containers:
+              - name: ray-worker
+                image: rayproject/ray:2.30.0-py310
+                resources:
+                  limits:
+                    memory: "12Gi"
+                  requests:
+                    memory: "6Gi"
+                volumeMounts:
+                  - name: ray-logs
+                    mountPath: /tmp/ray
+                  - name: shared-storage
+                    mountPath: /app/outputs
+            volumes:
+              - name: ray-logs
+                emptyDir: {}
+              - name: shared-storage
+                persistentVolumeClaim:
+                  claimName: ray-outputs-pvc
+---
+# Persistent Volume Claim for storing outputs
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ray-outputs-pvc
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  # Uncomment and configure based on your cluster's storage class
+  # storageClassName: nfs-client

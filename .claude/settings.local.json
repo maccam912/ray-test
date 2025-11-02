@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:docs.ray.io)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:pettingzoo.farama.org)",
+      "Bash(kubectl get:*)",
+      "Bash(kubectl apply:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
