@@ -174,7 +174,7 @@ def train(args):
         )
 
     # Output directory
-    output_dir = Path(args.output_dir)
+    output_dir = Path(args.output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Stop conditions
@@ -195,6 +195,8 @@ def train(args):
     print("=" * 60)
 
     # Run training with Tune
+    # storage_path must be an absolute path or URI
+    storage_uri = f"file://{output_dir}"
     results = tune.run(
         "PPO",
         name="hide_and_seek_experiment",
@@ -202,7 +204,7 @@ def train(args):
         stop=stop_config,
         checkpoint_freq=10,
         checkpoint_at_end=True,
-        storage_path=str(output_dir),
+        storage_path=storage_uri,
         verbose=1,
         restore=args.restore_checkpoint,
     )
