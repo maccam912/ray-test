@@ -110,7 +110,7 @@ def train(args):
             num_env_runners=args.num_workers,
             num_envs_per_env_runner=1,
             num_cpus_per_env_runner=1,
-            rollout_fragment_length=200,
+            rollout_fragment_length="auto",  # Let Ray auto-calculate based on train_batch_size
         )
         .training(
             train_batch_size_per_learner=4000,
