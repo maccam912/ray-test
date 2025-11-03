@@ -112,16 +112,18 @@ def train(args):
             rollout_fragment_length=200,
         )
         .training(
-            train_batch_size=4000,
-            sgd_minibatch_size=128,
-            num_sgd_iter=10,
+            train_batch_size_per_learner=4000,
+            minibatch_size=128,
+            num_epochs=10,
             lr=args.learning_rate,
             gamma=0.99,
             lambda_=0.95,
             clip_param=0.2,
             vf_clip_param=10.0,
             entropy_coeff=0.01,
-            model={
+        )
+        .rl_module(
+            model_config_dict={
                 # CNN configuration for vision-based observations
                 "conv_filters": [
                     [16, [3, 3], 1],   # 16 filters, 3x3 kernel, stride 1
@@ -130,7 +132,6 @@ def train(args):
                 "conv_activation": "relu",
                 "fcnet_hiddens": [256, 256],
                 "fcnet_activation": "relu",
-                "vf_share_layers": True,
             },
         )
         .multi_agent(
