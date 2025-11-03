@@ -55,12 +55,21 @@ def train(args):
     """
     # Initialize Ray
     if not ray.is_initialized():
-        ray.init(
-            ignore_reinit_error=True,
-            include_dashboard=True,
-            num_cpus=args.num_cpus,
-            num_gpus=args.num_gpus,
-        )
+        # Check if connecting to existing cluster (RAY_ADDRESS is set)
+        import os
+        if os.environ.get("RAY_ADDRESS"):
+            # Connecting to existing cluster - don't specify resources
+            ray.init(
+                ignore_reinit_error=True,
+            )
+        else:
+            # Starting local cluster - can specify resources
+            ray.init(
+                ignore_reinit_error=True,
+                include_dashboard=True,
+                num_cpus=args.num_cpus,
+                num_gpus=args.num_gpus,
+            )
 
     # Register environment
     register_custom_env()
