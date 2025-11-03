@@ -106,9 +106,9 @@ def train(args):
             env_config=env_config,
         )
         .framework("torch")
-        .rollouts(
-            num_rollout_workers=args.num_workers,
-            num_envs_per_worker=1,
+        .env_runners(
+            num_env_runners=args.num_workers,
+            num_envs_per_env_runner=1,
             rollout_fragment_length=200,
         )
         .training(
@@ -165,7 +165,7 @@ def train(args):
     if args.eval_interval > 0:
         config = config.evaluation(
             evaluation_interval=args.eval_interval,
-            evaluation_num_workers=1,
+            evaluation_num_env_runners=1,
             evaluation_duration=10,
             evaluation_config={
                 "render_env": args.record_video,
