@@ -3,7 +3,7 @@ name = "ray-test"
 version = "0.1.0"
 description = "Multi-agent reinforcement learning for hide and seek using Ray RLlib and PettingZoo"
 readme = "README.md"
-requires-python = ">=3.9,<3.13"
+requires-python = ">=3.10,<3.11"
 dependencies = [
     "ray[rllib]>=2.30.0",
     "pettingzoo[classic]>=1.24.0",
