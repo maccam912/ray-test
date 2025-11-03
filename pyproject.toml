@@ -25,3 +25,7 @@ dev = [
     "black>=23.0.0",
     "ruff>=0.1.0",
 ]
+
+[[tool.uv.index]]
+url = "https://nexus.rackspace.koski.co/repository/pypi-proxy/simple"
+default = true
