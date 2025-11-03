@@ -109,6 +109,7 @@ def train(args):
         .env_runners(
             num_env_runners=args.num_workers,
             num_envs_per_env_runner=1,
+            num_cpus_per_env_runner=1,
             rollout_fragment_length=200,
         )
         .training(
@@ -123,7 +124,7 @@ def train(args):
             entropy_coeff=0.01,
         )
         .rl_module(
-            model_config_dict={
+            model_config={
                 # CNN configuration for vision-based observations
                 "conv_filters": [
                     [16, [3, 3], 1],   # 16 filters, 3x3 kernel, stride 1
@@ -154,7 +155,6 @@ def train(args):
         )
         .resources(
             num_gpus=1 if args.num_gpus > 0 else 0,
-            num_cpus_per_worker=1,
         )
         .debugging(
             log_level="INFO",
@@ -202,7 +202,7 @@ def train(args):
         stop=stop_config,
         checkpoint_freq=10,
         checkpoint_at_end=True,
-        local_dir=str(output_dir),
+        storage_path=str(output_dir),
         verbose=1,
         restore=args.restore_checkpoint,
     )
