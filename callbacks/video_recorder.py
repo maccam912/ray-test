@@ -6,14 +6,16 @@ Captures frames during episodes and saves best/worst performing episodes as vide
 
 import os
 import numpy as np
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 from pathlib import Path
 
 from ray.rllib.algorithms.callbacks import DefaultCallbacks
 from ray.rllib.env import BaseEnv
-from ray.rllib.evaluation import Episode
 from ray.rllib.evaluation.episode_v2 import EpisodeV2
 from ray.rllib.policy import Policy
+
+# Type alias for episode - use EpisodeV2 for Ray 2.51+
+Episode = EpisodeV2
 
 
 class VideoRecorderCallback(DefaultCallbacks):
