@@ -29,8 +29,8 @@ class VideoRecorderCallback(DefaultCallbacks):
     - Automatic cleanup of old videos
     """
 
-    def __init__(self, legacy_callbacks_dict: Dict[str, callable] = None):
-        super().__init__(legacy_callbacks_dict)
+    def __init__(self):
+        super().__init__()
 
         self.best_episode_return = float('-inf')
         self.worst_episode_return = float('inf')
@@ -229,8 +229,8 @@ class MinimalVideoRecorderCallback(DefaultCallbacks):
     Only saves at specific training checkpoints.
     """
 
-    def __init__(self, legacy_callbacks_dict: Dict[str, callable] = None):
-        super().__init__(legacy_callbacks_dict)
+    def __init__(self):
+        super().__init__()
         self.save_dir = Path("outputs/videos")
         self.save_dir.mkdir(parents=True, exist_ok=True)
         self.iteration_count = 0
