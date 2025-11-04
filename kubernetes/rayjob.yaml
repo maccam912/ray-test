@@ -23,6 +23,9 @@ spec:
       containers:
         - name: ray-job-submitter
           image: rayproject/ray:2.51.1-py310
+          env:
+            - name: UV_LINK_MODE
+              value: copy
           resources:
             limits:
               memory: "4Gi"
@@ -60,6 +63,8 @@ spec:
               env:
                 - name: RAY_RUNTIME_ENV_HOOK
                   value: ray._private.runtime_env.uv_runtime_env_hook.hook
+                - name: UV_LINK_MODE
+                  value: copy
               ports:
                 - containerPort: 6379
                   name: gcs
@@ -103,6 +108,8 @@ spec:
                 env:
                   - name: RAY_RUNTIME_ENV_HOOK
                     value: ray._private.runtime_env.uv_runtime_env_hook.hook
+                  - name: UV_LINK_MODE
+                    value: copy
                 resources:
                   limits:
                     memory: "8Gi"
@@ -137,6 +144,8 @@ spec:
                 env:
                   - name: RAY_RUNTIME_ENV_HOOK
                     value: ray._private.runtime_env.uv_runtime_env_hook.hook
+                  - name: UV_LINK_MODE
+                    value: copy
                 resources:
                   limits:
                     memory: "12Gi"
