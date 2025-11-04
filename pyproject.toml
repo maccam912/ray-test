@@ -29,3 +29,12 @@ dev = [
 #[[tool.uv.index]]
 #url = "https://nexus.rackspace.koski.co/repository/pypi-proxy/simple"
 #default = true
+
+# Use CPU-only PyTorch to avoid NVIDIA dependencies
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }

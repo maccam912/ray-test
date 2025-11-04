@@ -19,8 +19,14 @@ RUN useradd -m -u 1000 -s /bin/bash ray
 USER ray
 WORKDIR /home/ray
 
-# Install Ray (this will use pip, but it's minimal - no Anaconda)
-RUN pip install --no-cache-dir "ray[rllib]==2.30.0"
+# Copy project files
+COPY --chown=ray:ray pyproject.toml uv.lock ./
+
+# Install dependencies using UV (will use CPU-only PyTorch from config)
+RUN uv sync --frozen --no-dev
+
+# Copy the rest of the project
+COPY --chown=ray:ray . .
 
 # Set environment variables
 ENV PATH="/home/ray/.local/bin:$PATH"
